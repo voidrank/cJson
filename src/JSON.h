@@ -19,13 +19,13 @@
 typedef unsigned int JSON_ssize_t;
 
 /* cJSON Types: */
-#define JSON_FALSE _json_false_type
-#define JSON_TRUE _json_true_type
-#define JSON_NULL _json_null_type
-#define JSON_NUMBER _json_number_type
-#define JSON_STRING _json_string_type
-#define JSON_ARRAY _json_array_type
-#define JSON_OBJECT _json_object_type
+#define JSON_FALSE  &_json_false_type
+#define JSON_TRUE   &_json_true_type
+#define JSON_NULL   &_json_null_type
+#define JSON_NUMBER &_json_number_type
+#define JSON_STRING &_json_string_type
+#define JSON_ARRAY  &_json_array_type
+#define JSON_OBJECT &_json_object_type
 
 
 
@@ -55,7 +55,7 @@ typedef struct{
 typedef struct {
     JSON_Object_HEAD
     double ob_ival;
-} JSON_Double_Object;
+} JSON_Num_Object;
 
 /* BASE VAR LENGTH OBJECT */
 typedef struct {
@@ -104,10 +104,16 @@ typedef struct _typeobject{
     char *tp_name; // type name
 }JSON_Type_Object;
 
-/* JSON_BASE TYPE */
+/* JSON_TYPE TYPE */
 JSON_Type_Object _json_type_type = {
     JSON_Object_HEAD_INIT(&_json_type_type),
     "json_type"
+};
+
+/* NULL TYPE */
+JSON_Type_Object _json_null_type = {
+    JSON_Object_HEAD_INIT(&_json_type_type),
+    "json_null"
 };
 
 /* FALSE TYPE */
@@ -152,6 +158,16 @@ JSON_Type_Object _json_object_type = {
     "json_object"
 };
 
+//Singleton Pattern
+JSON_Null_Object    _NULL = {
+    JSON_Object_HEAD_INIT(&_json_null_type)
+};
+JSON_False_Object   _FALSE = {
+    JSON_Object_HEAD_INIT(&_json_false_type)
+};
+JSON_True_Object    _TRUE = {
+    JSON_Object_HEAD_INIT(&_json_true_type)
+};
 
 
 /* Parse & Print */
