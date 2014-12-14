@@ -1,173 +1,146 @@
 #ifndef JSON_H
 #define JSON_H
 
+#include <string.h>
+#include <stdio.h>
 
-
-#define JSON_Object_HEAD \
+#define JsObject_HEAD \
     int ob_refcnt; \
-    struct _typeobject *ob_type;
+    struct _typeobject *type;
 
-#define JSON_Object_VAR_HEAD \
-    JSON_Object_HEAD \
+#define JsObject_VAR_HEAD \
+    JsObject_HEAD \
     int ob_size;
 
-#define JSON_Object_HEAD_INIT(x) 1, x
+#define JsObject_HEAD_INIT(x) 1, x
 
 
-
-/* base type */
-typedef unsigned int JSON_ssize_t;
 
 /* cJSON Types: */
-#define JSON_FALSE  &_json_false_type
-#define JSON_TRUE   &_json_true_type
-#define JSON_NULL   &_json_null_type
-#define JSON_NUMBER &_json_number_type
-#define JSON_STRING &_json_string_type
-#define JSON_ARRAY  &_json_array_type
-#define JSON_OBJECT &_json_object_type
+#define JSON_FALSE  &JsFalse_Type
+#define JSON_TRUE   &JsTrue_Type
+#define JSON_NULL   &JsNull_Type
+#define JSON_NUMBER &JsNum_Type
+#define JSON_STRING &JsString_Type
+#define JONS_ARRAY  &JsArray_Type
+#define JSON_OBJECT &JsObject_Type
 
 
 
 /* BASE OBJECT */
 typedef struct _object {
-    JSON_Object_HEAD
-} JSON_Object;
+    JsObject_HEAD
+} JsObject;
+typedef JsObject JSON;
 
-typedef JSON_Object JSON;
+
+
+/* binary function pointer */
+typedef JsObject * (*newfunc)(void);
+typedef JsObject * (*varnewfunc)(size_t var_size);
+
+/* new object function */
+JsObject *num_new(void);
+JsObject *string_new(size_t var_size);
 
 /* NULL OBJECT */
 typedef struct {
-    JSON_Object_HEAD
-} JSON_Null_Object;
+    JsObject_HEAD
+} JsNullObject;
 
 /* TRUE OBJECT */
 typedef struct{
-    JSON_Object_HEAD
-} JSON_True_Object;
+    JsObject_HEAD
+} JsTrueObject;
 
 /* FALSE OBJECT */
 typedef struct{
-    JSON_Object_HEAD
-} JSON_False_Object;
+    JsObject_HEAD
+} JsFalseObject;
 
 /* NUMBER OBJECT */
 typedef struct {
-    JSON_Object_HEAD
+    JsObject_HEAD
     double ob_ival;
-} JSON_Num_Object;
+} JsNumObject;
 
 /* BASE VAR LENGTH OBJECT */
 typedef struct {
-    JSON_Object_VAR_HEAD
-} JSON_Var_Object;
+    JsObject_VAR_HEAD
+} JsVarObject;
 
 /* STRING OBJECT */
 typedef struct {
     // notice that, I use malloc(or my own malloc function)
     // to get a block free memory, so the length of ob_sval 
     // should be unnoticed
-    JSON_Object_VAR_HEAD
+    JsObject_VAR_HEAD
     int ob_hash;
     char ob_sval[1];
-} JSON_String_Object;
+} JsStringObject;
 
 /* ARRAY OBJECT */
 typedef struct {
-    JSON_Object_HEAD
+    JsObject_HEAD
     JSON **ob_item;  // a pointer to the head of a block of memory block
     int allocated; // the size of the memory block
-} JSON_Array_Object;
+} JsArrayObject;
 
 /* JSON OBJECT Entry */
 typedef struct{
-    JSON_Object_HEAD
-    JSON_ssize_t me_hash;
-    JSON_Object *key;
-    JSON_Object *me_value;
-} JSON_Object_Entry_Object;
+    JsObject_HEAD
+    size_t me_hash;
+    JsObject *key;
+    JsObject *me_value;
+} JsObjectEntryObject;
 
-/* JSON_OBJECT */
+/* JsOBJECT */
 typedef struct {
-    JSON_Object_HEAD
-    JSON_ssize_t ma_fill; // element num: Active + Dummy
-    JSON_ssize_t ma_used; // element num: Active
-    JSON_ssize_t ma_mask; // element num: All (2^x)
-    JSON_Object_Entry_Object *ma_table; // memory pool
-} JSON_Object_Object;
+    JsObject_HEAD
+    size_t ma_fill; // element num: Active + Dummy
+    size_t ma_used; // element num: Active
+    size_t ma_mask; // element num: All (2^x)
+    JsObjectEntryObject *ma_table; // memory pool
+} JsObjectObject;
 
 
 
 /* JSON TYPE OBJECT */
 typedef struct _typeobject{
-    JSON_Object_HEAD
+    JsObject_HEAD
     char *tp_name; // type name
-}JSON_Type_Object;
+    size_t ob_size;
+    newfunc tp_new;
+}JsType_Object;
 
-/* JSON_TYPE TYPE */
-JSON_Type_Object _json_type_type = {
-    JSON_Object_HEAD_INIT(&_json_type_type),
-    "json_type"
-};
+typedef struct _vartypeobject{
+    JsObject_HEAD
+    char *tp_name;
+    size_t ob_size;
+    varnewfunc tp_new;
+}JsVarType_Object;
 
+
+/* JsTYPE TYPE */
+extern JsType_Object JsType_Type;
 /* NULL TYPE */
-JSON_Type_Object _json_null_type = {
-    JSON_Object_HEAD_INIT(&_json_type_type),
-    "json_null"
-};
-
+extern JsType_Object JsNull_Type;
 /* FALSE TYPE */
-JSON_Type_Object _json_false_type = {
-    JSON_Object_HEAD_INIT(&_json_type_type),
-    "json_flase"
-};
-
+extern JsType_Object JsFalse_Type;
 /* TRUE TYPE */
-JSON_Type_Object _json_true_type = {
-    JSON_Object_HEAD_INIT(&_json_type_type),
-    "json_true"
-};
-
-/* NULL TYPE */
-JSON_Type_Object _json_null_type = {
-    JSON_Object_HEAD_INIT(&_json_type_type),
-    "json_null"
-};
-
+extern JsType_Object JsTrue_Type;
 /* NUMBER TYPE */
-JSON_Type_Object _json_number_type = {
-    JSON_Object_HEAD_INIT(&_json_type_type),
-    "json_number"
-};
-
+extern JsType_Object JsNum_Type;
 /* STRING TYPE */
-JSON_Type_Object _json_string_type = {
-    JSON_Object_HEAD_INIT(&_json_type_type),
-    "json_string"
-};
-
+extern JsVarType_Object JsString_Type;
 /* ARRAY TYPE */
-JSON_Type_Object _json_array_type = {
-    JSON_Object_HEAD_INIT(&_json_type_type),
-    "json_array"
-};
-
-/* JSON_OBJECT TYPE */
-JSON_Type_Object _json_object_type = {
-    JSON_Object_HEAD_INIT(&_json_type_type),
-    "json_object"
-};
-
+extern JsType_Object JsArray_Type;
+/* JsOBJECT TYPE */
+extern JsType_Object JsObject_Type;
 //Singleton Pattern
-JSON_Null_Object    _NULL = {
-    JSON_Object_HEAD_INIT(&_json_null_type)
-};
-JSON_False_Object   _FALSE = {
-    JSON_Object_HEAD_INIT(&_json_false_type)
-};
-JSON_True_Object    _TRUE = {
-    JSON_Object_HEAD_INIT(&_json_true_type)
-};
+extern JsNullObject    JsNULL;
+extern JsFalseObject   JsFALSE;
+extern JsTrueObject    JsTRUE;
 
 
 /* Parse & Print */
