@@ -18,6 +18,13 @@ JsType_Object JsType_Type = {
     0
 };
 
+JsType_Object JsVarType_Type = {
+    JsObject_HEAD_INIT(&JsType_Type),
+    "json_var_type",
+    0,
+    0
+};
+
 /* NULL TYPE */
 JsType_Object JsNull_Type = {
     JsObject_HEAD_INIT(&JsType_Type),
@@ -52,7 +59,7 @@ JsType_Object JsNum_Type = {
 
 /* STRING TYPE */
 JsVarType_Object JsString_Type = {
-    JsObject_HEAD_INIT(&JsType_Type),
+    JsObject_HEAD_INIT(&JsVarType_Type),
     "json_string",
     sizeof(JsStringObject),
     string_new
@@ -80,20 +87,6 @@ JsFalseObject   JsFALSE = {
 JsTrueObject    JsTRUE = {
     JsObject_HEAD_INIT(&JsTrue_Type)
 };
-
-/*
-extern JsType_Object JsType_Type;
-extern JsType_Object JsNull_Type;
-extern JsType_Object JsFalse_Type;
-extern JsType_Object JsTrue_Type;
-extern JsType_Object JsNum_Type;
-extern JsVarType_Object JsString_Type;
-extern JsType_Object JsArray_Type;
-extern JsType_Object JsObject_Type;
-extern JsNullObject    JsNULL;
-extern JsFalseObject   JsFALSE;
-extern JsTrueObject    JsTRUE;
-*/
 
 // function
 
@@ -144,6 +137,8 @@ JsObject *CreateNumber(double num){
 JsObject *string_new(size_t var_size){
     size_t size = var_size + JsString_Type.ob_size;
     JsStringObject *obj = (JsStringObject*)malloc(size);
+    obj->type = (JsObject*)&JsString_Type;
+    obj->ob_refcnt = 1;
     return (JsObject*)obj;
 }
 
