@@ -68,7 +68,7 @@ void test_string(){
     if (obj->type != JSON_STRING){
         puts("Str Object wrong type");
     }
-    if (strcmp(obj->ob_sval, "heheha") != 0){
+    if (strcmp(obj->ob_sval, "heheda") != 0){
         puts("Str wrong string value");
         puts(obj->ob_sval);
     }
@@ -81,6 +81,7 @@ int main(){
     test_false();
     test_bool();
     test_int();
+    test_string();
     // test l Object
 
     return 0;

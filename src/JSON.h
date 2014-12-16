@@ -9,7 +9,8 @@
     struct _typeobject *type;
 
 #define JsObject_VAR_HEAD \
-    JsObject_HEAD \
+    int ob_refcnt; \
+    struct _vartypeobject *type; \
     int ob_size;
 
 #define JsObject_HEAD_INIT(x) 1, x

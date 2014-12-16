@@ -137,7 +137,7 @@ JsObject *CreateNumber(double num){
 JsObject *string_new(size_t var_size){
     size_t size = var_size + JsString_Type.ob_size;
     JsStringObject *obj = (JsStringObject*)malloc(size);
-    obj->type = (JsObject*)&JsString_Type;
+    obj->type = &JsString_Type;
     obj->ob_refcnt = 1;
     return (JsObject*)obj;
 }
