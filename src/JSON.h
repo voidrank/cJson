@@ -23,7 +23,7 @@
 #define JSON_NULL   &JsNull_Type
 #define JSON_NUMBER &JsNum_Type
 #define JSON_STRING &JsString_Type
-#define JONS_ARRAY  &JsArray_Type
+#define JSON_ARRAY  &JsArray_Type
 #define JSON_OBJECT &JsObject_Type
 
 
@@ -41,8 +41,9 @@ typedef JsObject * (*newfunc)(void);
 typedef JsObject * (*varnewfunc)(size_t var_size);
 
 /* new object function */
-JsObject *num_new(void);
-JsObject *string_new(size_t var_size);
+extern JsObject *num_new(void);
+extern JsObject *string_new(size_t var_size);
+extern JsObject *array_new(size_t var_size);
 
 /* NULL OBJECT */
 typedef struct {
@@ -82,9 +83,9 @@ typedef struct {
 
 /* ARRAY OBJECT */
 typedef struct {
-    JsObject_HEAD
-    JSON **ob_item;  // a pointer to the head of a block of memory block
+    JsObject_VAR_HEAD
     int allocated; // the size of the memory block
+    JsObject *ob_item[1];  // array block
 } JsArrayObject;
 
 /* JSON OBJECT Entry */
@@ -117,7 +118,7 @@ typedef struct _typeobject{
 typedef struct _vartypeobject{
     JsObject_HEAD
     char *tp_name;
-    size_t ob_size;
+    size_t ob_basesize;
     varnewfunc tp_new;
 }JsVarType_Object;
 
@@ -135,7 +136,7 @@ extern JsType_Object JsNum_Type;
 /* STRING TYPE */
 extern JsVarType_Object JsString_Type;
 /* ARRAY TYPE */
-extern JsType_Object JsArray_Type;
+extern JsVarType_Object JsArray_Type;
 /* JsOBJECT TYPE */
 extern JsType_Object JsObject_Type;
 //Singleton Pattern

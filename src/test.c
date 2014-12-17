@@ -61,19 +61,54 @@ void test_int(){
 }
 
 void test_string(){
-    JsStringObject *obj = (JsStringObject*)CreateString("heheda");
+    char const_test_string[] = "heheda";
+    JsStringObject *obj = (JsStringObject*)CreateString(const_test_string);
     if (obj->type != &JsString_Type){
         puts("Str Object wrong type");
     }
     if (obj->type != JSON_STRING){
         puts("Str Object wrong type");
     }
-    if (strcmp(obj->ob_sval, "heheda") != 0){
+    if (strcmp(obj->ob_sval, const_test_string) != 0){
         puts("Str wrong string value");
         puts(obj->ob_sval);
     }
+    if (obj->ob_size != sizeof(char)*strlen(const_test_string)){
+        puts("Str wrong ob_size");
+    }
 }
 
+void test_array(){
+    JsArrayObject *obj = (JsArrayObject*)CreateArray();
+    if (obj->type != &JsArray_Type){
+        puts("Array Object wrong type");
+    }
+    if (obj->type != JSON_ARRAY){
+        puts("Array Object wrong type");
+    }
+    if (obj->ob_size != 2){
+        puts("Array Object wrong ob_size");
+    }
+    JsObject *obj0 = CreateBool(1);
+    JsObject *obj1 = CreateString("heheda");
+    JsObject *obj2 = CreateNumber(233);
+    AddItemToArray((JsObject*)obj, obj0);
+    AddItemToArray((JsObject*)obj, obj1);
+    AddItemToArray((JsObject*)obj, obj2);
+    printf("%d\n", obj->allocated);
+    if (obj->allocated != 3){
+        puts("Wrong items counts");
+    }
+    if (obj->ob_item[0] != obj0){
+        puts("obj0 address error");
+    }
+    if (obj->ob_item[1] != obj1){
+        puts("obj1 address error");
+    }
+    if (obj->ob_item[2] != obj2){
+        puts("obj2 address error");
+    }
+}
 
 int main(){
     test_null();
@@ -82,6 +117,7 @@ int main(){
     test_bool();
     test_int();
     test_string();
+    test_array();
     // test l Object
 
     return 0;
