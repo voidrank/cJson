@@ -85,7 +85,7 @@ typedef struct {
 typedef struct {
     JsObject_VAR_HEAD
     int allocated; // the size of the memory block
-    JsObject *ob_item[1];  // array block
+    JsObject **ob_item;  // array block
 } JsArrayObject;
 
 /* JSON OBJECT Entry */

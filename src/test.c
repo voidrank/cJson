@@ -95,7 +95,6 @@ void test_array(){
     AddItemToArray((JsObject*)obj, obj0);
     AddItemToArray((JsObject*)obj, obj1);
     AddItemToArray((JsObject*)obj, obj2);
-    printf("%d\n", obj->allocated);
     if (obj->allocated != 3){
         puts("Wrong items counts");
     }

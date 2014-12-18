@@ -161,8 +161,9 @@ JsObject *CreateString(const char *string){
 
 // Array object function
 JsObject *array_new(size_t var_size){
-    size_t size = var_size*sizeof(JsObject*) + JsString_Type.ob_basesize;
+    size_t size = JsString_Type.ob_basesize;
     JsArrayObject *obj = (JsArrayObject*)malloc(size);
+    obj->ob_item = malloc(var_size*sizeof(JsObject*));
     obj->type = &JsArray_Type;
     obj->ob_refcnt = 1;
     obj->ob_size = var_size;
@@ -178,12 +179,11 @@ JsObject *CreateArray(void){
 void AddItemToArray(JsObject *array, JsObject *item){
     JsArrayObject *arr_obj = (JsArrayObject*)array;
     if (arr_obj->allocated+1 > arr_obj->ob_size){
-        JsArrayObject *new_arr_obj = (JsArrayObject*)JsArray_Type.tp_new(arr_obj->ob_size*2);
-        memcpy(new_arr_obj->ob_item,  arr_obj->ob_item, arr_obj->ob_size);
-        new_arr_obj->allocated = arr_obj->allocated;
-        printf("%d %d\n", new_arr_obj->allocated, new_arr_obj->ob_size);
-        //TODO: free old array object 
-        arr_obj = new_arr_obj;
+        JsObject **new_ob_item = malloc(arr_obj->ob_size*sizeof(JsObject*)<<1);
+        memcpy( new_ob_item, arr_obj->ob_item, arr_obj->ob_size*sizeof(JsObject*));
+        free(arr_obj->ob_item);
+        arr_obj->ob_item = new_ob_item;
+        arr_obj->ob_size <<= 1;
     }
     arr_obj->ob_item[arr_obj->allocated] = item;
     ++arr_obj->allocated;
