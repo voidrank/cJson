@@ -39,11 +39,26 @@ typedef JsObject JSON;
 /* binary function pointer */
 typedef JsObject * (*newfunc)(void);
 typedef JsObject * (*varnewfunc)(size_t var_size);
+typedef void (*destroyfunc)(JsObject*);
 
 /* new object function */
 extern JsObject *num_new(void);
 extern JsObject *string_new(size_t var_size);
 extern JsObject *array_new(size_t var_size);
+extern JsObject *entry_new(void);
+extern JsObject *object_new(size_t var_size);
+
+/* destroy object function */
+extern void intern_destroy(JsObject *obj);
+extern void num_destroy(JsObject *obj);
+extern void string_destroy(JsObject *obj);
+extern void array_destroy(JsObject *obj);
+extern void entry_destroy(JsObject *obj);
+extern void object_destroy(JsObject *obj);
+
+/* hash */
+extern unsigned int hash(JsObject *obj);
+extern unsigned int strhash(char *str);
 
 /* NULL OBJECT */
 typedef struct {
@@ -77,8 +92,8 @@ typedef struct {
     // to get a block free memory, so the length of ob_sval 
     // should be unnoticed
     JsObject_VAR_HEAD
-    int ob_hash;
-    char ob_sval[1];
+    size_t ob_hash;
+    char *ob_sval;
 } JsStringObject;
 
 /* ARRAY OBJECT */
@@ -94,15 +109,14 @@ typedef struct{
     size_t me_hash;
     JsObject *key;
     JsObject *me_value;
-} JsObjectEntryObject;
+} JsEntryObject;
 
 /* JsOBJECT */
 typedef struct {
-    JsObject_HEAD
-    size_t ma_fill; // element num: Active + Dummy
-    size_t ma_used; // element num: Active
-    size_t ma_mask; // element num: All (2^x)
-    JsObjectEntryObject *ma_table; // memory pool
+    JsObject_VAR_HEAD
+    size_t ma_fill;
+    size_t ma_mask;
+    JsEntryObject **ma_table;
 } JsObjectObject;
 
 
@@ -113,6 +127,7 @@ typedef struct _typeobject{
     char *tp_name; // type name
     size_t ob_size;
     newfunc tp_new;
+    destroyfunc tp_destroy;
 }JsType_Object;
 
 typedef struct _vartypeobject{
@@ -120,6 +135,7 @@ typedef struct _vartypeobject{
     char *tp_name;
     size_t ob_basesize;
     varnewfunc tp_new;
+    destroyfunc tp_destroy;
 }JsVarType_Object;
 
 
@@ -137,20 +153,26 @@ extern JsType_Object JsNum_Type;
 extern JsVarType_Object JsString_Type;
 /* ARRAY TYPE */
 extern JsVarType_Object JsArray_Type;
+/* JsEntry TYPE */
+extern JsType_Object JsEntry_Type;
 /* JsOBJECT TYPE */
-extern JsType_Object JsObject_Type;
+extern JsVarType_Object JsObject_Type;
+
+
+
 //Singleton Pattern
 extern JsNullObject    JsNULL;
 extern JsFalseObject   JsFALSE;
 extern JsTrueObject    JsTRUE;
 
 
+
 /* Parse & Print */
-extern JSON *ParseJSON(const char *value);
-extern JSON *ParseJSONFromFile(const char *file_name);
+extern JSON *ParseJSON( char *value);
+extern JSON *ParseJSONFromFile( char *file_name);
 
 extern void PrintJSON(JSON *item);
-extern void PrintJSONToFile(JSON *item, const char *file_name);
+extern void PrintJSONToFile(JSON *item,  char *file_name);
 
 
 
@@ -160,29 +182,31 @@ extern JSON *CreateTrue(void);
 extern JSON *CreateFalse(void);
 extern JSON *CreateBool(int b);
 extern JSON *CreateNumber(double num);
-extern JSON *CreateString(const char *string);
+extern JSON *CreateString(char *string);
 extern JSON *CreateArray(void);
 extern JSON *CreateObject(void);
 
 
+/* Insert */
+extern void InsertItemToObject(JsObject *obj, char *key, JsObject *value);
 
 /* Append */
 extern void AddItemToArray(JSON *array, JSON *item);
-extern void AddItemToObject(JSON *object, const char *key, JSON *value);
+extern void AddItemToObject(JSON *object, char *key, JSON *value);
 
 
 
 /* Update */
 extern void ReplaceItemInArray(JSON *array, int which, JSON *new_item);
-extern void ReplaceItemInObject(JSON *object, const char *key, JSON *new_value);
+extern void ReplaceItemInObject(JSON *object,  char *key, JSON *new_value);
 
 
 
 /* Remove/Delete */
 extern JSON *DetachItemFromArray(JSON *array, int which);
-extern void *DeleteItemFromArray(JSON *array, int which);
-extern JSON *DetachItemFromObject(JSON *object, const char *key);
-extern void *DeleteItemFromObject(JSON *object, const char *key);
+extern void DeleteItemFromArray(JSON *array, int which);
+extern JSON *DetachItemFromObject(JSON *object,  char *key);
+extern void DeleteItemFromObject(JSON *object,  char *key);
 
 extern void DeleteJSON(JSON *item);
 
@@ -195,9 +219,7 @@ extern JSON *Duplicate(JSON *item, int recurse);
 
 /* Read */
 extern JSON *GetItemInArray(JSON *array, int which);
-extern JSON *GetItemInObject(JSON *object, const char *key);
-extern JSON *GetItemInJSON(JSON *json, const char *path);
-
-
+extern JSON *GetItemInObject(JSON *object,  char *key);
+extern JSON *GetItemInJSON(JSON *json,  char *path);
 
 #endif

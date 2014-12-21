@@ -76,10 +76,20 @@ void test_string(){
     if (obj->ob_size != sizeof(char)*strlen(const_test_string)){
         puts("Str wrong ob_size");
     }
+    if (obj->ob_hash == 0)
+        printf("wrong hash func");
+    JsObject *obj0 = CreateString("hehe");
+    JsObject *obj1 = CreateString("heheda");
+    JsObject *obj2 = CreateString("hehehe");
+    if (obj1->type != obj0->type)
+        printf("string wrong type");
+    if (obj2->type != obj0->type)
+        printf("string wrong type");
 }
 
 void test_array(){
     JsArrayObject *obj = (JsArrayObject*)CreateArray();
+
     if (obj->type != &JsArray_Type){
         puts("Array Object wrong type");
     }
@@ -107,6 +117,62 @@ void test_array(){
     if (obj->ob_item[2] != obj2){
         puts("obj2 address error");
     }
+   
+
+    JsObject *replaced_obj = CreateBool(1);
+    ReplaceItemInArray((JsObject*)obj, 2, replaced_obj);
+    if (obj->ob_item[2] != replaced_obj){
+        puts("replace item error!");
+    }
+    // it will throw a exception
+    printf("expected error(out of range): ");
+    ReplaceItemInArray((JsObject*)obj, 3, replaced_obj);
+    
+    JsObject *detached_obj0 = DetachItemFromArray((JsObject*)obj, 1);
+    if (detached_obj0 != obj1){
+        puts("detach error");
+    }
+    printf("expected error(out of range): ");
+    DeleteItemFromArray((JsObject*)obj, 2);
+    printf("expected error(out of range): ");
+    DetachItemFromArray((JsObject*)obj, 2);
+    JsObject *detached_obj1 = DetachItemFromArray((JsObject*)obj, 1);
+    if (detached_obj1 != replaced_obj){
+        puts("detach array item error");
+    }
+
+    if (obj->ob_item[0] != GetItemInArray((JsObject*)obj, 0)){
+        puts("get array item error");
+    }
+}
+
+void test_object(){
+    JsObject *obj0 = CreateBool(1);
+    JsObject *obj1 = CreateNumber(2);
+    JsObject *obj2 = CreateString("heheda");
+    JsObject *obj_obj = CreateObject();
+    InsertItemToObject(obj_obj, "heheda", obj0);
+    InsertItemToObject(obj_obj, "hehehe", obj1);
+    InsertItemToObject(obj_obj, "hahaha", obj2);
+    if (GetItemInObject(obj_obj, "heheda") != obj0){
+        printf("wrong read operation in jsonobject");
+    }
+    if (GetItemInObject(obj_obj, "hehehe") != obj1){
+        printf("wrong read operation in jsonobject");
+    }
+    if (GetItemInObject(obj_obj, "heheha") != obj2){
+        printf("expected error(wrong read operation in jsonobject): #(wrong read operation in jsonobject)\n");
+    }
+    
+    if (DetachItemFromObject(obj_obj, "heheda") != obj0){
+        printf("wrong detach operation in jsonobject\n");
+    }
+    if (DetachItemFromObject(obj_obj, "hehehe") != obj1){
+        printf("wrong detach operation in jsonobject\n");
+    }
+    if (DetachItemFromObject(obj_obj, "hahaha") != obj2){
+        printf("wrong detach operation in jsonobject\n");
+    }
 }
 
 int main(){
@@ -117,7 +183,6 @@ int main(){
     test_int();
     test_string();
     test_array();
-    // test l Object
-
+    test_object();
     return 0;
 }
