@@ -1,6 +1,11 @@
 #include "JSON.h"
 #include "parse.h"
+#include "output.h"
 #include <stdio.h>
+#include <math.h>
+#include <stdlib.h>
+
+#define eps 1e-8
 
 void test_null(void){
     JsObject *null_obj = CreateNULL();
@@ -49,7 +54,7 @@ void test_bool(void){
     }
 }
 
-void test_int(){
+void test_num(){
     JsNumObject *obj = (JsNumObject*)CreateNumber(10);
     if (obj->type != &JsNum_Type){
         puts("Num Object wrong type");
@@ -176,16 +181,78 @@ void test_object(){
     }
 }
 
-void test_string_parse(){
-    char s[] = "heheda";
-    JsObject *obj = ParseJSON(s);
+void test_parse_null(){
+    JsObject *obj = ParseJSON("null");
+    JsNumObject *null_obj = (JsNumObject*)obj;
+    if (null_obj->type != &JsNull_Type)
+        printf("wrong type\n");
+}
+
+
+void test_parse_true(){
+    JsObject *obj = ParseJSON("true");
+    JsNumObject *true_obj = (JsNumObject*)obj;
+    if (true_obj->type != &JsTrue_Type)
+        printf("wrong type\n");
+}
+
+
+void test_parse_false(){
+    JsObject *obj = ParseJSON("false");
+    JsNumObject *false_obj = (JsNumObject*)obj;
+    if (false_obj->type != &JsFalse_Type)
+        printf("wrong type\n");
+}
+
+void test_parse_number(){
+    JsObject *obj = ParseJSON("123.123");
+    JsNumObject *num_obj = (JsNumObject*)obj;
+    if (num_obj->type != &JsNum_Type)
+        printf("wrong type\n");
+    if (abs(num_obj->ob_ival-123.123) > eps){
+        puts("wrong number value.");
+        printf("%.9f\n", num_obj->ob_ival);
+    }
+}
+
+
+void test_parse_string(){
+    JsObject *obj = ParseJSON("\"heheda\"");
     JsStringObject *str_obj = (JsStringObject*)obj;
     if (str_obj->type != &JsString_Type)
         printf("wrong type\n");
     if (strcmp(str_obj->ob_sval, "heheda") != 0){
-        printf("wrong answer.\n");
+        printf("wrong string value.\n");
         puts(str_obj->ob_sval);
     }
+}
+
+void test_parse_array(){
+    JsObject *obj = ParseJSON("[\"hehe\", \"haha\"]");
+    JsObject *obj0 = GetItemInArray(obj, 0);
+    JsObject *obj1 = GetItemInArray(obj, 1);
+    char *str0 = GetStringValue(obj0);
+    char *str1 = GetStringValue(obj1);
+    if (strcmp(str0, "hehe") != 0){
+        printf("wrong array value: %s", str0);
+    }
+    if (strcmp(str1, "haha") != 0){
+        printf("wrong array value: %s", str1);
+    }
+}
+
+void test_parse_object(){
+    JsObject *obj = ParseJSON("{ \"heheda\":\"papapa\"}");
+    JsObject *str_obj = GetItemInObject(obj, "heheda");
+    if (strcmp(GetStringValue(str_obj), "papapa") != 0){
+        puts("wrong answer");
+        puts(GetStringValue(str_obj));
+    }
+}
+
+void test_parse_file(){
+    JsObject *obj = ParseJSONFromFile("heheda.txt");
+    PrintJSON(obj);
 }
 
 int main(){
@@ -193,9 +260,23 @@ int main(){
     test_true();
     test_false();
     test_bool();
-    test_int();
+    test_num();
     test_string();
     test_array();
     test_object();
+
+    //true
+    /*
+    test_parse_null();
+    test_parse_true();
+    test_parse_false();
+    test_parse_number();
+    test_parse_string();
+    test_parse_array();
+    test_parse_object();
+    */
+
+    //test file
+    test_parse_file();
     return 0;
 }

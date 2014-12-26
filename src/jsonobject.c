@@ -40,7 +40,7 @@ void entry_destroy(JsObject *obj){
     free(ent_obj);
 }
 
-static JsObject *CreateEntry(JsObject *key, JsObject *value){
+JsObject *CreateEntry(JsObject *key, JsObject *value){
     JsEntryObject *ent = (JsEntryObject*)JsEntry_Type.tp_new();
     ent->key = key;
     ent->me_value = value;
@@ -48,7 +48,7 @@ static JsObject *CreateEntry(JsObject *key, JsObject *value){
     return (JsObject*)ent;
 }
 
-static void DestroyEntry(JsObject *item){
+void DestroyEntry(JsObject *item){
     JsEntryObject *ent = (JsEntryObject*)item;
     if (ent != &dummy&& ent != NULL){
         ent->type->tp_destroy((JsObject*)ent);
@@ -131,8 +131,8 @@ static void DirectInsertItemToObject(JsObject *obj, JsObject *item){
     ++obj_obj->ma_fill;
 }
 
-void InsertItemToObject(JsObject *obj, char *key, JsObject *value){
-    JsEntryObject *ent_obj = (JsEntryObject*)CreateEntry(CreateString(key), value);
+void InsertEntryToObject(JsObject *obj, JsObject *entry){
+    JsEntryObject *ent_obj = (JsEntryObject*)entry;
     JsObjectObject *obj_obj = (JsObjectObject*)obj;
     if ((obj_obj->ma_fill+1)*3 >= (obj_obj->ob_size)*2){
         JsEntryObject **old_items = obj_obj->ma_table;
@@ -152,6 +152,12 @@ void InsertItemToObject(JsObject *obj, char *key, JsObject *value){
         free(old_items);
     }
     DirectInsertItemToObject((JsObject*)obj_obj, (JsObject*)ent_obj);
+}
+
+
+void InsertItemToObject(JsObject *obj, char *key, JsObject *value){
+    JsObject *ent_obj = CreateEntry(CreateString(key), value);
+    return InsertEntryToObject(obj, ent_obj);
 }
 
 void AddItemToObject(JsObject *obj, char *key, JsObject *value){

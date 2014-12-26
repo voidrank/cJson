@@ -164,11 +164,8 @@ extern JsVarType_Object JsObject_Type;
 extern JsNullObject    JsNULL;
 extern JsFalseObject   JsFALSE;
 extern JsTrueObject    JsTRUE;
+extern JsEntryObject    dummy;
 
-
-
-extern void PrintJSON(JSON *item);
-extern void PrintJSONToFile(JSON *item,  char *file_name);
 
 
 /* Create */
@@ -179,6 +176,7 @@ extern JSON *CreateBool(int b);
 extern JSON *CreateNumber(double num);
 extern JSON *CreateString(char *string);
 extern JSON *CreateArray(void);
+extern JSON *CreateEntry(JSON *key, JSON *value);
 extern JSON *CreateObject(void);
 
 
@@ -188,6 +186,7 @@ extern void InsertItemToObject(JsObject *obj, char *key, JsObject *value);
 /* Append */
 extern void AddItemToArray(JSON *array, JSON *item);
 extern void AddItemToObject(JSON *object, char *key, JSON *value);
+extern void InsertEntryToObject(JsObject *obj, JsObject *entry);
 
 
 
@@ -213,8 +212,12 @@ extern JSON *Duplicate(JSON *item, int recurse);
 
 
 /* Read */
+extern char *GetStringValue(JSON *str);
 extern JSON *GetItemInArray(JSON *array, int which);
 extern JSON *GetItemInObject(JSON *object,  char *key);
 extern JSON *GetItemInJSON(JSON *json,  char *path);
+
+/* GET COUNT */
+extern int GetItemTotalInArray(JSON *obj);
 
 #endif

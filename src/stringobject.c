@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <assert.h>
 
 #include "JSON.h"
 
@@ -58,3 +59,7 @@ JsObject *CreateString(char *string){
     return (JsObject*)obj;
 }   
 
+char *GetStringValue(JsObject *obj){
+    assert(obj->type == (JsType_Object*)&JsString_Type);
+    return ((JsStringObject*)obj)->ob_sval;
+}

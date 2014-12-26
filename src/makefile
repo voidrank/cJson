@@ -3,10 +3,12 @@ main: libcjson.so JSON.h test.c
 
 libcjson.so: typeobject.c nullobject.c trueobject.c falseobject.c \
 	boolobject.c numobject.c stringobject.c arrayobject.c jsonobject.c JSON.h\
-	parse.c parse.h
+	parse.c parse.h\
+	output.c output.h
 	clang typeobject.c nullobject.c trueobject.c falseobject.c \
 		boolobject.c numobject.c stringobject.c arrayobject.c jsonobject.c \
 		parse.c \
+		output.c \
 		-shared -fPIC -Wall -g -o libcjson.so
 
 

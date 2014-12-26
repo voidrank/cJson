@@ -1,4 +1,4 @@
-#ifdef PARSE_H
+#ifndef PARSE_H
 #define PARSE_H
 
 #include "JSON.h"

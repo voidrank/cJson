@@ -92,3 +92,7 @@ JsObject *GetItemInArray(JsObject *obj, int which){
     }
     return arr_obj->ob_item[which];
 }
+
+int GetItemTotalInArray(JsObject *obj){
+    return ((JsArrayObject*)obj)->allocated;
+}
