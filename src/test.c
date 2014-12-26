@@ -1,4 +1,5 @@
 #include "JSON.h"
+#include "parse.h"
 #include <stdio.h>
 
 void test_null(void){
@@ -172,6 +173,18 @@ void test_object(){
     }
     if (DetachItemFromObject(obj_obj, "hahaha") != obj2){
         printf("wrong detach operation in jsonobject\n");
+    }
+}
+
+void test_string_parse(){
+    char s[] = "heheda";
+    JsObject *obj = ParseJSON(s);
+    JsStringObject *str_obj = (JsStringObject*)obj;
+    if (str_obj->type != &JsString_Type)
+        printf("wrong type\n");
+    if (strcmp(str_obj->ob_sval, "heheda") != 0){
+        printf("wrong answer.\n");
+        puts(str_obj->ob_sval);
     }
 }
 

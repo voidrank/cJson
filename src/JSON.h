@@ -167,13 +167,8 @@ extern JsTrueObject    JsTRUE;
 
 
 
-/* Parse & Print */
-extern JSON *ParseJSON( char *value);
-extern JSON *ParseJSONFromFile( char *file_name);
-
 extern void PrintJSON(JSON *item);
 extern void PrintJSONToFile(JSON *item,  char *file_name);
-
 
 
 /* Create */
@@ -205,7 +200,7 @@ extern void ReplaceItemInObject(JSON *object,  char *key, JSON *new_value);
 /* Remove/Delete */
 extern JSON *DetachItemFromArray(JSON *array, int which);
 extern void DeleteItemFromArray(JSON *array, int which);
-extern JSON *DetachItemFromObject(JSON *object,  char *key);
+extern JSON *DetachItemFromObject(JSON *object, char *key);
 extern void DeleteItemFromObject(JSON *object,  char *key);
 
 extern void DeleteJSON(JSON *item);
