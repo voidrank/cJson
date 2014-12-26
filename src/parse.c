@@ -92,7 +92,8 @@ JsObject *num_type_parse(){
         }
         next_char();
     }
-    val /= div;
+    if (dp_found)
+        val /= div;
     return CreateNumber(val);
 }
 
@@ -150,7 +151,6 @@ JsObject *object_type_parse(){
         if (str_value() == ',')
             next_char();
         next_non_space_char();
-        printf("enter1111");
     }
     next_char();
     return obj;

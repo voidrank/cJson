@@ -37,7 +37,7 @@ void PrintJSON(JsObject *item){
         int first = 1;
         int ct = 0;
         JsObjectObject *obj = (JsObjectObject*)item;
-        for (int i = 0; i < obj->ma_mask; ++i)
+        for (int i = 0; i <= obj->ma_mask; ++i)
             if (obj->ma_table[i] != NULL&& obj->ma_table[i] != &dummy){
                 if (first!=0)
                     first = 0;
@@ -49,7 +49,6 @@ void PrintJSON(JsObject *item){
                 PrintJSON(obj->ma_table[i]->me_value);
             }
         printf("}");
-        printf("%d\n", ct);
     }
 }
 
