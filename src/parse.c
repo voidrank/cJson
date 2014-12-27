@@ -34,7 +34,7 @@ static void next_char(){
 }
 
 static void next_non_space_char(){
-    while (str_value() == ' ')
+    while (str_value() == ' '|| str_value()=='\n')
         next_char();
 }
 

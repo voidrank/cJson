@@ -256,7 +256,7 @@ void test_parse_file(){
 }
 
 int main(){
-/*    test_null();
+    test_null();
     test_true();
     test_false();
     test_bool();
@@ -264,10 +264,8 @@ int main(){
     test_string();
     test_array();
     test_object();
-    */
 
     //true
-    /*
     test_parse_null();
     test_parse_true();
     test_parse_false();
@@ -275,7 +273,6 @@ int main(){
     test_parse_string();
     test_parse_array();
     test_parse_object();
-    */
 
     //test file
     test_parse_file();

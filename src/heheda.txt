@@ -1,2 +1,11 @@
-{"123":["heheda","papap",["heheda",["heheda", "heheda"]]], "hehe":"papa", "ad":1, "ajhdsakjsdhf":"ajkhdsf", "aljdshf":true, "akjshdf":false, "ajsdhf":true}
-
+{
+    "ajhsdfg":["akjsdhf"],
+    "core":{"heheda":{"papap":"skdjf","1":[[[[[]]]]]}},
+    "locate":"loacat",
+    "ajkshd":"ajhdsfg",
+    "akjsdhf":true,
+    "sjjjj":false,
+    "utuutut":null,
+    "iitititi":123123
+    "1222":"apjdj"
+}

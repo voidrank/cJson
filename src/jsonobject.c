@@ -104,22 +104,19 @@ int rich_compare(JsObject *obj0, JsObject *obj1){
 static JsEntryObject **LookUpItemInObject(JsObject *obj, JsObject *item){
     JsObjectObject *obj_obj = (JsObjectObject*)obj;
     JsEntryObject *ins_obj = (JsEntryObject*)item;
-    unsigned int perturb, hash = ins_obj->me_hash, mask = obj_obj->ma_mask, i = mask;
-    printf("%lu ", ((i << 2) + i + perturb + 1)&mask);
-    for (perturb = hash; (i&mask) != 0; perturb >>= 5) {
+    unsigned int perturb, hash = ins_obj->me_hash, mask = obj_obj->ma_mask, i = 0;
+    for (perturb = hash; ; perturb >>= 5) {
         i = (i << 2) + i + perturb + 1;
-        printf("%d ", i&mask);
+        //printf("%d ", i&mask);
         JsEntryObject **p_ent_obj = &obj_obj->ma_table[i&mask];
         JsEntryObject *ent_obj = *p_ent_obj;
         if (ent_obj == NULL|| rich_compare(ent_obj->key, ins_obj->key)){
-            puts("");
+            //puts("");
             return p_ent_obj;
         }
     }    
     // according to above algorithm,
     // this part can't be reached
-    puts(GetStringValue(ins_obj->key));
-    printf("%d %d\n", obj_obj->ma_mask, ins_obj->me_hash);
     
     printf("wrong branch\n");
     return NULL;
@@ -141,7 +138,7 @@ void InsertEntryToObject(JsObject *obj, JsObject *entry){
     JsEntryObject *ent_obj = (JsEntryObject*)entry;
     JsObjectObject *obj_obj = (JsObjectObject*)obj;
     if ((obj_obj->ma_fill+1)*3 >= (obj_obj->ob_size)*2){
-        puts("enter41111");
+        //puts("enter41111");
         JsEntryObject **old_items = obj_obj->ma_table;
         int i;
         obj_obj->ma_table = (JsEntryObject**)calloc(((obj_obj->ob_size)<<1), sizeof(JsEntryObject*));
@@ -189,7 +186,7 @@ JsObject *DetachItemFromObject(JsObject *obj, char *str){
     JsObject *ent_obj = CreateEntry(CreateString(str), NULL);
     JsEntryObject **ret_obj = LookUpItemInObject(obj, ent_obj);
     if ((*ret_obj) == &dummy|| (*ret_obj) == NULL){
-        printf("enter %lu\n", ret_obj-((JsObjectObject*)obj)->ma_table);
+        //printf("enter %lu\n", ret_obj-((JsObjectObject*)obj)->ma_table);
         puts("enter 404");
         return NULL;
     }
